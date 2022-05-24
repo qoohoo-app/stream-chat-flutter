@@ -434,7 +434,9 @@ class DirectDbAccess {
   ) =>
       SharedDB.constructDatabase(userId, connectionMode: mode);
 
-  @override
+  ///Check wheather database is already connected
+  bool isConnected() => db != null;
+
   Future<void> connect(
     String userId,
     ConnectionMode connectionMode,
