@@ -58,8 +58,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
     if (record.stackTrace != null) print(record.stackTrace);
   }
 
-  Future<T> _readProtected<T>(AsyncValueGetter<T> func) =>
-      _mutex.protectRead(func);
+  Future<T> _readProtected<T>(AsyncValueGetter<T> func) => _mutex.protectRead(func);
 
   bool get _debugIsConnected {
     assert(() {
@@ -95,8 +94,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
         'disconnect the previous instance before connecting again.',
       );
     }
-    db = databaseProvider?.call(userId, _connectionMode) ??
-        await _defaultDatabaseProvider(userId, _connectionMode);
+    db = databaseProvider?.call(userId, _connectionMode) ?? await _defaultDatabaseProvider(userId, _connectionMode);
   }
 
   @override
@@ -363,8 +361,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
     assert(_debugIsConnected, '');
     _logger.info('deletePinnedMessageReactionsByMessageId');
     return _readProtected(
-      () =>
-          db!.pinnedMessageReactionDao.deleteReactionsByMessageIds(messageIds),
+      () => db!.pinnedMessageReactionDao.deleteReactionsByMessageIds(messageIds),
     );
   }
 
@@ -398,8 +395,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
   }
 
   @override
-  Future<void> disconnect({bool flush = false}) async =>
-      _mutex.protectWrite(() async {
+  Future<void> disconnect({bool flush = false}) async => _mutex.protectWrite(() async {
         _logger.info('disconnect');
         if (db != null) {
           _logger.info('Disconnecting');
@@ -411,4 +407,74 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
           db = null;
         }
       });
+}
+
+///Provides direct access to drift DB to query channels in cache and delete channels by CID
+class DirectDbAccess {
+  // ignore: public_member_api_docs
+  DirectDbAccess({
+    Level logLevel = Level.WARNING,
+    LogHandlerFunction? logHandlerFunction,
+  }) : _logger = Logger.detached('💽')..level = logLevel {
+    _logger.onRecord.listen(logHandlerFunction);
+  }
+
+  final Logger _logger;
+  late final ConnectionMode _connectionMode;
+  final _mutex = ReadWriteMutex();
+
+  Future<T> _readProtected<T>(AsyncValueGetter<T> func) => _mutex.protectRead(func);
+
+  @visibleForTesting
+  DriftChatDatabase? db;
+
+  DriftChatDatabase _defaultDatabaseProvider(
+    String userId,
+    ConnectionMode mode,
+  ) =>
+      SharedDB.constructDatabase(userId, connectionMode: mode);
+
+  @override
+  Future<void> connect(
+    String userId,
+    ConnectionMode connectionMode,
+  ) async {
+    if (db != null) {
+      throw Exception(
+        'An instance of StreamChatDatabase is already connected.\n'
+        'disconnect the previous instance before connecting again.',
+      );
+    }
+    _connectionMode = connectionMode;
+    db = _defaultDatabaseProvider(userId, _connectionMode);
+  }
+
+  Future<void> disconnect({bool flush = false}) async => _mutex.protectWrite(() async {
+        if (db != null) {
+          if (flush) {
+            await db!.flush();
+          }
+          await db!.disconnect();
+          db = null;
+        }
+      });
+
+  Future<List<ChannelModel>> getCacheChannels({
+    Filter? filter,
+  }) {
+    _logger.info('get channel in cache');
+    return _readProtected(
+      () async {
+        final channels = await db!.channelQueryDao.getChannels(
+          filter: filter,
+        );
+        return channels;
+      },
+    );
+  }
+
+  Future<void> deleteChannels(List<String> cids) {
+    _logger.info('delete channels in cache from cid');
+    return _readProtected(() => db!.channelDao.deleteChannelByCids(cids));
+  }
 }
