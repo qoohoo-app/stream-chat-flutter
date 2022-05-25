@@ -40,6 +40,13 @@ class ChannelDao extends DatabaseAccessor<DriftChatDatabase>
       .map((c) => c.cid)
       .get();
 
+  /// Get the channel cids saved in the storage
+  Future<List<ChannelEntity>> get allChannels => (select(channels)
+    ..orderBy([(c) => OrderingTerm.desc(c.lastMessageAt)])
+    ..limit(250))
+      .map((c) => c)
+      .get();
+
   /// Updates all the channels using the new [channelList] data
   Future<void> updateChannels(List<ChannelModel> channelList) => batch(
         (it) => it.insertAllOnConflictUpdate(

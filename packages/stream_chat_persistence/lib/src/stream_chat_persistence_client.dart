@@ -461,17 +461,10 @@ class DirectDbAccess {
         }
       });
 
-  Future<List<ChannelModel>> getCacheChannels({
-    Filter? filter,
-  }) {
+  Future<List<ChannelEntity>> getCacheChannelCids() {
     _logger.info('get channel in cache');
     return _readProtected(
-      () async {
-        final channels = await db!.channelQueryDao.getChannels(
-          filter: filter,
-        );
-        return channels;
-      },
+      () => db!.channelDao.allChannels,
     );
   }
 
