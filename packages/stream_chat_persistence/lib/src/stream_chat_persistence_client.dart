@@ -428,11 +428,14 @@ class DirectDbAccess {
   @visibleForTesting
   DriftChatDatabase? db;
 
-  DriftChatDatabase _defaultDatabaseProvider(
+  Future<DriftChatDatabase> _defaultDatabaseProvider(
     String userId,
     ConnectionMode mode,
   ) =>
-      SharedDB.constructDatabase(userId, connectionMode: mode);
+      SharedDB.constructDatabase(
+        userId,
+        connectionMode: mode,
+      );
 
   ///Check wheather database is already connected
   bool isConnected() => db != null;
@@ -448,7 +451,7 @@ class DirectDbAccess {
       );
     }
     _connectionMode = connectionMode;
-    db = _defaultDatabaseProvider(userId, _connectionMode);
+    db = await _defaultDatabaseProvider(userId, _connectionMode);
   }
 
   Future<void> disconnect({bool flush = false}) async => _mutex.protectWrite(() async {
