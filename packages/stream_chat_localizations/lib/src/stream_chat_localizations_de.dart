@@ -15,6 +15,9 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'Derzeit gibt es keine User';
 
   @override
+  String get noPhotoOrVideoLabel => 'Es gibt kein Foto oder Video';
+
+  @override
   String get retryLabel => 'Erneut versuchen';
 
   @override
@@ -123,9 +126,6 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String fileTooLargeError(double limitInMB) =>
       'Die Datei ist zu groß zum Hochladen. '
       'Die Dateigröße ist begrenzt auf $limitInMB MB.';
-
-  @override
-  String emojiMatchingQueryText(String query) => 'Emoji-Abgleich "$query"';
 
   @override
   String get addAFileLabel => 'Datei hinzufügen';
@@ -380,13 +380,64 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
       'Sie sind nicht berechtigt Nachrichten zu senden';
 
   @override
+  String get couldNotReadBytesFromFileError =>
+      'Kan bytes niet uit bestand lezen.';
+
+  @override
+  String get downloadLabel => 'Downloaden';
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) {
+      return 'UNMUTE';
+    } else {
+      return 'STOM';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Weet je zeker dat je het dempen van deze groep wilt opheffen?';
+    } else {
+      return 'Weet je zeker dat je deze groep wilt dempen?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Dempen groep opheffen';
+    } else {
+      return 'Groep dempen';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return '''Weet je zeker dat je het dempen van deze gebruiker wilt opheffen?''';
+    } else {
+      return 'Weet u zeker dat u deze gebruiker wilt dempen?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    return 'Gebruiker dempen';
+  }
+
+  @override
   String get viewLibrary => 'Bibliothek öffnen';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 ungelesene Nachricht';
-    }
-    return '$unreadCount ungelesene Nachrichten';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'Neue Nachrichten';
+
+  @override
+  String get enableFileAccessMessage =>
+      'Bitte aktivieren Sie den Zugriff auf Dateien,'
+      '\ndamit Sie sie mit Freunden teilen können.';
+
+  @override
+  String get allowFileAccessMessage => 'Zugriff auf Dateien zulassen';
 }

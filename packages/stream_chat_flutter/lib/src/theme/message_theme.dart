@@ -2,10 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/theme/avatar_theme.dart';
 
-/// {@macro message_theme_data}
-@Deprecated("Use 'StreamMessageThemeData' instead")
-typedef MessageThemeData = StreamMessageThemeData;
-
 /// {@template message_theme_data}
 /// Class for getting message theme
 /// {@endtemplate}
@@ -25,6 +21,7 @@ class StreamMessageThemeData with Diagnosticable {
     this.avatarTheme,
     this.createdAtStyle,
     this.linkBackgroundColor,
+    this.urlAttachmentTitleMaxLine,
   });
 
   /// Text style for message text
@@ -63,6 +60,9 @@ class StreamMessageThemeData with Diagnosticable {
   /// Background color for messages with url attachments.
   final Color? linkBackgroundColor;
 
+  /// Max number of lines in Url link title
+  final int? urlAttachmentTitleMaxLine;
+
   /// Copy with a theme
   StreamMessageThemeData copyWith({
     TextStyle? messageTextStyle,
@@ -77,57 +77,62 @@ class StreamMessageThemeData with Diagnosticable {
     Color? reactionsBorderColor,
     Color? reactionsMaskColor,
     Color? linkBackgroundColor,
-  }) =>
-      StreamMessageThemeData(
-        messageTextStyle: messageTextStyle ?? this.messageTextStyle,
-        messageAuthorStyle: messageAuthorStyle ?? this.messageAuthorStyle,
-        messageLinksStyle: messageLinksStyle ?? this.messageLinksStyle,
-        createdAtStyle: createdAtStyle ?? this.createdAtStyle,
-        messageBackgroundColor:
-            messageBackgroundColor ?? this.messageBackgroundColor,
-        messageBorderColor: messageBorderColor ?? this.messageBorderColor,
-        avatarTheme: avatarTheme ?? this.avatarTheme,
-        repliesStyle: repliesStyle ?? this.repliesStyle,
-        reactionsBackgroundColor:
-            reactionsBackgroundColor ?? this.reactionsBackgroundColor,
-        reactionsBorderColor: reactionsBorderColor ?? this.reactionsBorderColor,
-        reactionsMaskColor: reactionsMaskColor ?? this.reactionsMaskColor,
-        linkBackgroundColor: linkBackgroundColor ?? this.linkBackgroundColor,
-      );
+    int? urlAttachmentTitleMaxLine,
+  }) {
+    return StreamMessageThemeData(
+      messageTextStyle: messageTextStyle ?? this.messageTextStyle,
+      messageAuthorStyle: messageAuthorStyle ?? this.messageAuthorStyle,
+      messageLinksStyle: messageLinksStyle ?? this.messageLinksStyle,
+      createdAtStyle: createdAtStyle ?? this.createdAtStyle,
+      messageBackgroundColor:
+          messageBackgroundColor ?? this.messageBackgroundColor,
+      messageBorderColor: messageBorderColor ?? this.messageBorderColor,
+      avatarTheme: avatarTheme ?? this.avatarTheme,
+      repliesStyle: repliesStyle ?? this.repliesStyle,
+      reactionsBackgroundColor:
+          reactionsBackgroundColor ?? this.reactionsBackgroundColor,
+      reactionsBorderColor: reactionsBorderColor ?? this.reactionsBorderColor,
+      reactionsMaskColor: reactionsMaskColor ?? this.reactionsMaskColor,
+      linkBackgroundColor: linkBackgroundColor ?? this.linkBackgroundColor,
+      urlAttachmentTitleMaxLine:
+          urlAttachmentTitleMaxLine ?? this.urlAttachmentTitleMaxLine,
+    );
+  }
 
   /// Linearly interpolate from one [StreamMessageThemeData] to another.
   StreamMessageThemeData lerp(
     StreamMessageThemeData a,
     StreamMessageThemeData b,
     double t,
-  ) =>
-      StreamMessageThemeData(
-        avatarTheme: const StreamAvatarThemeData()
-            .lerp(a.avatarTheme!, b.avatarTheme!, t),
-        createdAtStyle: TextStyle.lerp(a.createdAtStyle, b.createdAtStyle, t),
-        messageAuthorStyle:
-            TextStyle.lerp(a.messageAuthorStyle, b.messageAuthorStyle, t),
-        messageBackgroundColor:
-            Color.lerp(a.messageBackgroundColor, b.messageBackgroundColor, t),
-        messageBorderColor:
-            Color.lerp(a.messageBorderColor, b.messageBorderColor, t),
-        messageLinksStyle:
-            TextStyle.lerp(a.messageLinksStyle, b.messageLinksStyle, t),
-        messageTextStyle:
-            TextStyle.lerp(a.messageTextStyle, b.messageTextStyle, t),
-        reactionsBackgroundColor: Color.lerp(
-          a.reactionsBackgroundColor,
-          b.reactionsBackgroundColor,
-          t,
-        ),
-        reactionsBorderColor:
-            Color.lerp(a.messageBorderColor, b.reactionsBorderColor, t),
-        reactionsMaskColor:
-            Color.lerp(a.reactionsMaskColor, b.reactionsMaskColor, t),
-        repliesStyle: TextStyle.lerp(a.repliesStyle, b.repliesStyle, t),
-        linkBackgroundColor:
-            Color.lerp(a.linkBackgroundColor, b.linkBackgroundColor, t),
-      );
+  ) {
+    return StreamMessageThemeData(
+      avatarTheme:
+          const StreamAvatarThemeData().lerp(a.avatarTheme!, b.avatarTheme!, t),
+      createdAtStyle: TextStyle.lerp(a.createdAtStyle, b.createdAtStyle, t),
+      messageAuthorStyle:
+          TextStyle.lerp(a.messageAuthorStyle, b.messageAuthorStyle, t),
+      messageBackgroundColor:
+          Color.lerp(a.messageBackgroundColor, b.messageBackgroundColor, t),
+      messageBorderColor:
+          Color.lerp(a.messageBorderColor, b.messageBorderColor, t),
+      messageLinksStyle:
+          TextStyle.lerp(a.messageLinksStyle, b.messageLinksStyle, t),
+      messageTextStyle:
+          TextStyle.lerp(a.messageTextStyle, b.messageTextStyle, t),
+      reactionsBackgroundColor: Color.lerp(
+        a.reactionsBackgroundColor,
+        b.reactionsBackgroundColor,
+        t,
+      ),
+      reactionsBorderColor:
+          Color.lerp(a.messageBorderColor, b.reactionsBorderColor, t),
+      reactionsMaskColor:
+          Color.lerp(a.reactionsMaskColor, b.reactionsMaskColor, t),
+      repliesStyle: TextStyle.lerp(a.repliesStyle, b.repliesStyle, t),
+      linkBackgroundColor:
+          Color.lerp(a.linkBackgroundColor, b.linkBackgroundColor, t),
+    );
+  }
 
   /// Merge with a theme
   StreamMessageThemeData merge(StreamMessageThemeData? other) {
@@ -150,6 +155,7 @@ class StreamMessageThemeData with Diagnosticable {
       reactionsBorderColor: other.reactionsBorderColor,
       reactionsMaskColor: other.reactionsMaskColor,
       linkBackgroundColor: other.linkBackgroundColor,
+      urlAttachmentTitleMaxLine: other.urlAttachmentTitleMaxLine,
     );
   }
 
@@ -169,7 +175,8 @@ class StreamMessageThemeData with Diagnosticable {
           reactionsBorderColor == other.reactionsBorderColor &&
           reactionsMaskColor == other.reactionsMaskColor &&
           avatarTheme == other.avatarTheme &&
-          linkBackgroundColor == other.linkBackgroundColor;
+          linkBackgroundColor == other.linkBackgroundColor &&
+          urlAttachmentTitleMaxLine == other.urlAttachmentTitleMaxLine;
 
   @override
   int get hashCode =>
@@ -184,7 +191,8 @@ class StreamMessageThemeData with Diagnosticable {
       reactionsBorderColor.hashCode ^
       reactionsMaskColor.hashCode ^
       avatarTheme.hashCode ^
-      linkBackgroundColor.hashCode;
+      linkBackgroundColor.hashCode ^
+      urlAttachmentTitleMaxLine.hashCode;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -201,6 +209,10 @@ class StreamMessageThemeData with Diagnosticable {
       ..add(ColorProperty('reactionsBackgroundColor', reactionsBackgroundColor))
       ..add(ColorProperty('reactionsBorderColor', reactionsBorderColor))
       ..add(ColorProperty('reactionsMaskColor', reactionsMaskColor))
-      ..add(ColorProperty('linkBackgroundColor', linkBackgroundColor));
+      ..add(ColorProperty('linkBackgroundColor', linkBackgroundColor))
+      ..add(DiagnosticsProperty(
+        'urlAttachmentTitleMaxLine',
+        urlAttachmentTitleMaxLine,
+      ));
   }
 }

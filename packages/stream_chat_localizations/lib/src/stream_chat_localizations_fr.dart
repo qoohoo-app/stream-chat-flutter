@@ -15,6 +15,9 @@ class StreamChatLocalizationsFr extends GlobalStreamChatLocalizations {
   String get noUsersLabel => "Il n'y a pas d'utilisateurs actuellement";
 
   @override
+  String get noPhotoOrVideoLabel => "Il n'y a ni photo ni vidéo";
+
+  @override
   String get retryLabel => 'Réessayer';
 
   @override
@@ -131,8 +134,8 @@ class StreamChatLocalizationsFr extends GlobalStreamChatLocalizations {
       'La taille limite du fichier est de $limitInMB Mo.';
 
   @override
-  String emojiMatchingQueryText(String query) =>
-      'Emoji qui correspond à "$query"';
+  String get couldNotReadBytesFromFileError =>
+      'Impossible de lire les octets du fichier.';
 
   @override
   String get addAFileLabel => 'Ajouter un fichier';
@@ -381,6 +384,54 @@ Limite de pièces jointes dépassée : il n'est pas possible d'ajouter plus de $
   String get slowModeOnLabel => 'Mode lent activé';
 
   @override
+  String get downloadLabel => 'Télécharger';
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    if (isMuted) {
+      return "Réactiver l'utilisateur";
+    } else {
+      return 'Utilisateur muet';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Voulez-vous vraiment réactiver le son de ce groupe ?';
+    } else {
+      return '¿Estás seguro de que quieres silenciar a este grupo?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Voulez-vous vraiment réactiver le son de cet utilisateur ?';
+    } else {
+      return 'Voulez-vous vraiment désactiver cet utilisateur ?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) {
+      return 'RÉACTIVER LE MUET';
+    } else {
+      return 'MUET';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Activer le groupe';
+    } else {
+      return 'Groupe muet';
+    }
+  }
+
+  @override
   String get linkDisabledDetails =>
       "L'envoi de liens n'est pas autorisé dans cette conversation.";
 
@@ -388,10 +439,13 @@ Limite de pièces jointes dépassée : il n'est pas possible d'ajouter plus de $
   String get linkDisabledError => 'Les liens sont désactivés';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 message non lu';
-    }
-    return '$unreadCount messages non lus';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'Nouveaux messages';
+
+  @override
+  String get enableFileAccessMessage =>
+      "Veuillez autoriser l'accès aux fichiers"
+      '\nafin de pouvoir les partager avec des amis.';
+
+  @override
+  String get allowFileAccessMessage => "Autoriser l'accès aux fichiers";
 }

@@ -39,6 +39,9 @@ class NnStreamChatLocalizations extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'There are no users currently';
 
   @override
+  String get noPhotoOrVideoLabel => 'There is no photo or video';
+
+  @override
   String get retryLabel => 'Retry';
 
   @override
@@ -152,7 +155,8 @@ class NnStreamChatLocalizations extends GlobalStreamChatLocalizations {
       'The file is too large to upload. The file size limit is $limitInMB MB.';
 
   @override
-  String emojiMatchingQueryText(String query) => 'Emoji matching "$query"';
+  String get couldNotReadBytesFromFileError =>
+      'Could not read bytes from file.';
 
   @override
   String get addAFileLabel => 'Add a file';
@@ -397,6 +401,54 @@ class NnStreamChatLocalizations extends GlobalStreamChatLocalizations {
   String get slowModeOnLabel => 'Slow mode ON';
 
   @override
+  String get downloadLabel => 'Download';
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Unmute User';
+    } else {
+      return 'Mute User';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Are you sure you want to unmute this group?';
+    } else {
+      return 'Are you sure you want to mute this group?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Are you sure you want to unmute this user?';
+    } else {
+      return 'Are you sure you want to mute this user?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) {
+      return 'UNMUTE';
+    } else {
+      return 'MUTE';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Unmute Group';
+    } else {
+      return 'Mute Group';
+    }
+  }
+
+  @override
   String get linkDisabledDetails =>
       'Sending links is not allowed in this conversation.';
 
@@ -407,12 +459,13 @@ class NnStreamChatLocalizations extends GlobalStreamChatLocalizations {
   String get viewLibrary => 'View library';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 unread message';
-    }
-    return '$unreadCount unread messages';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'New messages';
+
+  @override
+  String get enableFileAccessMessage => 'Enable file access to continue';
+
+  @override
+  String get allowFileAccessMessage => 'Allow access to files';
 }
 
 void main() async {
@@ -476,36 +529,38 @@ class MyApp extends StatelessWidget {
   final Channel channel;
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
-        // Add all the supported locales
-        supportedLocales: const [
-          Locale('en'),
-          Locale('hi'),
-          Locale('fr'),
-          Locale('it'),
-          Locale('es'),
-          Locale('ja'),
-          Locale('ko'),
-          // Add support for additional 'nn' locale
-          Locale('nn'),
-        ],
-        // Add overridden "NnStreamChatLocalizations.delegate" along with
-        // "GlobalStreamChatLocalizations.delegates"
-        localizationsDelegates: const [
-          NnStreamChatLocalizations.delegate,
-          ...GlobalStreamChatLocalizations.delegates,
-        ],
-        builder: (context, widget) => StreamChat(
-          client: client,
-          child: widget,
-        ),
-        home: StreamChannel(
-          channel: channel,
-          child: const ChannelPage(),
-        ),
-      );
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      // Add all the supported locales
+      supportedLocales: const [
+        Locale('en'),
+        Locale('hi'),
+        Locale('fr'),
+        Locale('it'),
+        Locale('es'),
+        Locale('ja'),
+        Locale('ko'),
+        // Add support for additional 'nn' locale
+        Locale('nn'),
+      ],
+      // Add overridden "NnStreamChatLocalizations.delegate" along with
+      // "GlobalStreamChatLocalizations.delegates"
+      localizationsDelegates: const [
+        NnStreamChatLocalizations.delegate,
+        ...GlobalStreamChatLocalizations.delegates,
+      ],
+      builder: (context, widget) => StreamChat(
+        client: client,
+        child: widget,
+      ),
+      home: StreamChannel(
+        channel: channel,
+        child: const ChannelPage(),
+      ),
+    );
+  }
 }
 
 /// A list of messages sent in the current channel.
@@ -521,15 +576,17 @@ class ChannelPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: const StreamChannelHeader(),
-        body: Column(
-          children: const <Widget>[
-            Expanded(
-              child: StreamMessageListView(),
-            ),
-            StreamMessageInput(),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const StreamChannelHeader(),
+      body: Column(
+        children: const <Widget>[
+          Expanded(
+            child: StreamMessageListView(),
+          ),
+          StreamMessageInput(),
+        ],
+      ),
+    );
+  }
 }

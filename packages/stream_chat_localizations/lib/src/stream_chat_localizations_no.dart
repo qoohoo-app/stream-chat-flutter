@@ -15,6 +15,9 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'Det er ingen brukere akkurat nå';
 
   @override
+  String get noPhotoOrVideoLabel => 'Det er ingen bilde eller video';
+
+  @override
   String get retryLabel => 'Prøv igjen';
 
   @override
@@ -126,9 +129,6 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
   @override
   String fileTooLargeError(double limitInMB) =>
       'Filen er for stor til å laste opp. Filgrense er $limitInMB MB.';
-
-  @override
-  String emojiMatchingQueryText(String query) => 'Emoji matcher "$query"';
 
   @override
   String get addAFileLabel => 'Legg til en fil';
@@ -383,10 +383,54 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
   String get viewLibrary => 'Se bibliotek';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 ulest melding';
-    }
-    return '$unreadCount uleste meldinger';
+  String unreadMessagesSeparatorText(int unreadCount) => 'Nye meldinger.';
+
+  @override
+  String get couldNotReadBytesFromFileError =>
+      'Kunne ikke lese bytes fra filen.';
+
+  @override
+  String get downloadLabel => 'Nedlasting';
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) return 'Slå på lyden for bruker';
+    return 'Dempe bruker';
   }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Er du sikker på at du vil oppheve ignoreringen av denne gruppen?';
+    }
+    return 'Er du sikker på at du vil ignorere denne gruppen?';
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) return 'Slå på lyden for gruppe';
+    return 'Mute gruppe';
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      // ignore: lines_longer_than_80_chars
+      return 'Er du sikker på at du vil oppheve ignoreringen av denne brukeren?';
+    }
+    return 'Er du sikker på at du vil ignorere denne brukeren?';
+  }
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    if (isMuted) return 'Opphev lyden av brukeren';
+    return 'Dempe brukeren';
+  }
+
+  @override
+  String get enableFileAccessMessage =>
+      'Aktiver tilgang til filer slik' '\nat du kan dele dem med venner.';
+
+  @override
+  String get allowFileAccessMessage => 'Gi tilgang til filer';
 }

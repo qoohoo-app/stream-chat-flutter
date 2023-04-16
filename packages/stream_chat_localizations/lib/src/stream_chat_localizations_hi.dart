@@ -15,6 +15,9 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'वर्तमान में कोई यूजर नहीं हैं';
 
   @override
+  String get noPhotoOrVideoLabel => 'कोई फोटो या वीडियो नहीं है।';
+
+  @override
   String get retryLabel => 'पुन: प्रयास करे';
 
   @override
@@ -127,7 +130,7 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
       'फ़ाइल अपलोड करने के लिए बहुत बड़ी है। फ़ाइल आकार सीमा $limitInMB MB है।';
 
   @override
-  String emojiMatchingQueryText(String query) => '"$query" से मिलते हुए इमोजी';
+  String get couldNotReadBytesFromFileError => 'फ़ाइल से बाइट नहीं पढ़ सका.';
 
   @override
   String get addAFileLabel => 'एक फ़ाइल जोड़ें';
@@ -375,6 +378,54 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   String get slowModeOnLabel => 'स्लो मोड चालू';
 
   @override
+  String get downloadLabel => 'डाउनलोड';
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    if (isMuted) {
+      return 'उपयोगकर्ता को अनम्यूट करें';
+    } else {
+      return 'उपयोगकर्ता को म्यूट करें';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'क्या आप वाकई इस समूह को अनम्यूट करना चाहते हैं?';
+    } else {
+      return 'क्या आप वाकई इस समूह को म्यूट करना चाहते हैं?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'क्या आप वाकई इस उपयोगकर्ता को अनम्यूट करना चाहते हैं?';
+    } else {
+      return 'क्या आप वाकई इस उपयोगकर्ता को म्यूट करना चाहते हैं?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) {
+      return 'अनम्यूट';
+    } else {
+      return 'मूक';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) {
+      return 'समूह अनम्यूट करें';
+    } else {
+      return 'मूक समूह';
+    }
+  }
+
+  @override
   String get linkDisabledDetails =>
       'इस बातचीत में लिंक भेजने की अनुमति नहीं है.';
 
@@ -382,10 +433,12 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   String get linkDisabledError => 'लिंक भेजना प्रतिबंधित';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 अपठित संदेश';
-    }
-    return '$unreadCount अपठित संदेश';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'नए संदेश।';
+
+  @override
+  String get enableFileAccessMessage => 'कृपया फ़ाइलों तक पहुंच सक्षम करें ताकि'
+      '\nआप उन्हें मित्रों के साथ साझा कर सकें।';
+
+  @override
+  String get allowFileAccessMessage => 'फाइलों तक पहुंच की अनुमति दें';
 }

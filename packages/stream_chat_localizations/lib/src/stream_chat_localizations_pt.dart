@@ -15,6 +15,9 @@ class StreamChatLocalizationsPt extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'Nenhum usuário atualmente';
 
   @override
+  String get noPhotoOrVideoLabel => 'Não há fotos ou vídeos';
+
+  @override
   String get retryLabel => 'Tente novamente';
 
   @override
@@ -66,7 +69,8 @@ class StreamChatLocalizationsPt extends GlobalStreamChatLocalizations {
   String get genericErrorText => 'Ocorreu um problema';
 
   @override
-  String get loadingMessagesError => 'Ocorreu um problema ao carregar mensagem';
+  String get loadingMessagesError =>
+      'Ocorreu um problema ao carregar a mensagem';
 
   @override
   String resultCountText(int count) => '$count resultados';
@@ -126,8 +130,8 @@ class StreamChatLocalizationsPt extends GlobalStreamChatLocalizations {
       'O tamanho máximo dos arquivos é de $limitInMB MB.';
 
   @override
-  String emojiMatchingQueryText(String query) =>
-      'Emoji correspondente a "$query"';
+  String get couldNotReadBytesFromFileError =>
+      'Não foi possível ler os bytes do arquivo.';
 
   @override
   String get addAFileLabel => 'Adicionar um arquivo';
@@ -158,7 +162,7 @@ class StreamChatLocalizationsPt extends GlobalStreamChatLocalizations {
 
   @override
   String get enablePhotoAndVideoAccessMessage =>
-      'Por favor, permita o acesso a suas fotos'
+      'Por favor, permita o acesso às suas fotos'
       '\ne vídeos para que possa compartilhar com sua rede.';
 
   @override
@@ -372,6 +376,54 @@ Não é possível adicionar mais de $limit arquivos de uma vez
   String get slowModeOnLabel => 'Modo lento ativado';
 
   @override
+  String get downloadLabel => 'Download';
+
+  @override
+  String toggleMuteUnmuteUserText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Ativar o som do usuário';
+    } else {
+      return 'Silenciar usuário';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Tem certeza de que deseja ativar o som deste grupo?';
+    } else {
+      return 'Tem certeza de que deseja silenciar este grupo?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteUserQuestion({required bool isMuted}) {
+    if (isMuted) {
+      return 'Tem certeza de que deseja ativar o som deste usuário?';
+    } else {
+      return 'Tem certeza de que deseja silenciar este usuário?';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteAction({required bool isMuted}) {
+    if (isMuted) {
+      return 'ATIVAR MUDO';
+    } else {
+      return 'MUDO';
+    }
+  }
+
+  @override
+  String toggleMuteUnmuteGroupText({required bool isMuted}) {
+    if (isMuted) {
+      return 'Reativar o som do grupo';
+    } else {
+      return 'Silenciar Grupo';
+    }
+  }
+
+  @override
   String get linkDisabledDetails =>
       'O envio de links não é permitido nesta conversa.';
 
@@ -386,10 +438,12 @@ Não é possível adicionar mais de $limit arquivos de uma vez
   String get viewLibrary => 'Ver biblioteca';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 mensagem não lida';
-    }
-    return '$unreadCount mensagens não lidas';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'Novas mensagens';
+
+  @override
+  String get enableFileAccessMessage =>
+      'Ative o acesso aos arquivos' '\npara poder compartilhá-los com amigos.';
+
+  @override
+  String get allowFileAccessMessage => 'Permitir acesso aos arquivos';
 }

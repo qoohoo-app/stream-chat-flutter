@@ -97,15 +97,17 @@ ListDevicesResponse _$ListDevicesResponseFromJson(Map<String, dynamic> json) =>
               .toList() ??
           [];
 
+SendAttachmentResponse _$SendAttachmentResponseFromJson(
+        Map<String, dynamic> json) =>
+    SendAttachmentResponse()
+      ..duration = json['duration'] as String?
+      ..file = json['file'] as String?;
+
 SendFileResponse _$SendFileResponseFromJson(Map<String, dynamic> json) =>
     SendFileResponse()
       ..duration = json['duration'] as String?
-      ..file = json['file'] as String;
-
-SendImageResponse _$SendImageResponseFromJson(Map<String, dynamic> json) =>
-    SendImageResponse()
-      ..duration = json['duration'] as String?
-      ..file = json['file'] as String;
+      ..file = json['file'] as String?
+      ..thumbUrl = json['thumb_url'] as String?;
 
 SendReactionResponse _$SendReactionResponseFromJson(
         Map<String, dynamic> json) =>
@@ -297,3 +299,17 @@ OGAttachmentResponse _$OGAttachmentResponseFromJson(
       ..title = json['title'] as String?
       ..titleLink = json['title_link'] as String?
       ..type = json['type'] as String?;
+
+CallTokenPayload _$CallTokenPayloadFromJson(Map<String, dynamic> json) =>
+    CallTokenPayload()
+      ..duration = json['duration'] as String?
+      ..token = json['token'] as String?
+      ..agoraUid = json['agora_uid'] as int?
+      ..agoraAppId = json['agora_app_id'] as String?;
+
+CreateCallPayload _$CreateCallPayloadFromJson(Map<String, dynamic> json) =>
+    CreateCallPayload()
+      ..duration = json['duration'] as String?
+      ..call = json['call'] == null
+          ? null
+          : CallPayload.fromJson(json['call'] as Map<String, dynamic>);

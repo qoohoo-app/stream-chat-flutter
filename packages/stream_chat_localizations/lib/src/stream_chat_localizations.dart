@@ -3,24 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-part 'stream_chat_localizations_es.dart';
-
-part 'stream_chat_localizations_en.dart';
-
-part 'stream_chat_localizations_fr.dart';
-
-part 'stream_chat_localizations_it.dart';
-
-part 'stream_chat_localizations_ja.dart';
-
-part 'stream_chat_localizations_ko.dart';
-
-part 'stream_chat_localizations_hi.dart';
-
-part 'stream_chat_localizations_pt.dart';
-
+part 'stream_chat_localizations_ca.dart';
 part 'stream_chat_localizations_de.dart';
-
+part 'stream_chat_localizations_en.dart';
+part 'stream_chat_localizations_es.dart';
+part 'stream_chat_localizations_fr.dart';
+part 'stream_chat_localizations_hi.dart';
+part 'stream_chat_localizations_it.dart';
+part 'stream_chat_localizations_ja.dart';
+part 'stream_chat_localizations_ko.dart';
+part 'stream_chat_localizations_pt.dart';
 part 'stream_chat_localizations_no.dart';
 
 /// The set of supported languages, as language code strings.
@@ -37,6 +29,7 @@ const kStreamChatSupportedLanguages = {
   'fr',
   'it',
   'es',
+  'ca',
   'ja',
   'ko',
   'pt',
@@ -74,6 +67,8 @@ GlobalStreamChatLocalizations? getStreamChatTranslation(Locale locale) {
       return const StreamChatLocalizationsIt();
     case 'es':
       return const StreamChatLocalizationsEs();
+    case 'ca':
+      return const StreamChatLocalizationsCa();
     case 'ja':
       return const StreamChatLocalizationsJa();
     case 'ko':

@@ -1,7 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stream_chat/src/client/client.dart';
+import 'package:stream_chat/src/core/api/call_api.dart';
 import 'package:stream_chat/src/core/error/error.dart';
 import 'package:stream_chat/src/core/models/banned_user.dart';
+import 'package:stream_chat/src/core/models/call_payload.dart';
 import 'package:stream_chat/src/core/models/channel_model.dart';
 import 'package:stream_chat/src/core/models/channel_state.dart';
 import 'package:stream_chat/src/core/models/device.dart';
@@ -155,11 +157,24 @@ class ListDevicesResponse extends _BaseResponse {
       _$ListDevicesResponseFromJson(json);
 }
 
+/// Base Model response for [Channel.sendImage] and [Channel.sendFile] api call.
+@JsonSerializable(createToJson: false)
+class SendAttachmentResponse extends _BaseResponse {
+  /// The url of the uploaded attachment.
+  late String? file;
+
+  /// Create a new instance from a json
+  static SendAttachmentResponse fromJson(Map<String, dynamic> json) =>
+      _$SendAttachmentResponseFromJson(json);
+}
+
 /// Model response for [Channel.sendFile] api call
 @JsonSerializable(createToJson: false)
-class SendFileResponse extends _BaseResponse {
-  /// The url of the uploaded file
-  late String file;
+class SendFileResponse extends SendAttachmentResponse {
+  /// The url of the uploaded video file.
+  ///
+  /// This is only present if the file is a video.
+  String? thumbUrl;
 
   /// Create a new instance from a json
   static SendFileResponse fromJson(Map<String, dynamic> json) =>
@@ -167,15 +182,7 @@ class SendFileResponse extends _BaseResponse {
 }
 
 /// Model response for [Channel.sendImage] api call
-@JsonSerializable(createToJson: false)
-class SendImageResponse extends _BaseResponse {
-  /// The url of the uploaded file
-  late String file;
-
-  /// Create a new instance from a json
-  static SendImageResponse fromJson(Map<String, dynamic> json) =>
-      _$SendImageResponseFromJson(json);
-}
+typedef SendImageResponse = SendAttachmentResponse;
 
 /// Model response for [Channel.sendReaction] api call
 @JsonSerializable(createToJson: false)
@@ -494,4 +501,32 @@ class OGAttachmentResponse extends _BaseResponse {
   /// Create a new instance from a [json].
   static OGAttachmentResponse fromJson(Map<String, dynamic> json) =>
       _$OGAttachmentResponseFromJson(json);
+}
+
+/// The response to [CallApi.getCallToken]
+@JsonSerializable(createToJson: false)
+class CallTokenPayload extends _BaseResponse {
+  /// Create a new instance from a [json].
+  static CallTokenPayload fromJson(Map<String, dynamic> json) =>
+      _$CallTokenPayloadFromJson(json);
+
+  /// The token to use for the call.
+  String? token;
+
+  /// The user id specific to Agora.
+  int? agoraUid;
+
+  /// The appId specific to Agora.
+  String? agoraAppId;
+}
+
+/// The response to [CallApi.createCall]
+@JsonSerializable(createToJson: false)
+class CreateCallPayload extends _BaseResponse {
+  /// Create a new instance from a [json].
+  static CreateCallPayload fromJson(Map<String, dynamic> json) =>
+      _$CreateCallPayloadFromJson(json);
+
+  /// The call object.
+  CallPayload? call;
 }

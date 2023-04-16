@@ -463,12 +463,19 @@ class Channel {
 
     client.logger.info('Found ${attachments.length} attachments');
 
-    void updateAttachment(Attachment attachment) {
+    void updateAttachment(Attachment attachment, {bool remove = false}) {
       final index = message!.attachments.indexWhere(
         (it) => it.id == attachment.id,
       );
       if (index != -1) {
-        final newAttachments = [...message!.attachments]..[index] = attachment;
+        // update or remove attachment from message.
+        final List<Attachment> newAttachments;
+        if (remove) {
+          newAttachments = [...message!.attachments]..removeAt(index);
+        } else {
+          newAttachments = [...message!.attachments]..[index] = attachment;
+        }
+
         final updatedMessage = message!.copyWith(attachments: newAttachments);
         state?.updateMessage(updatedMessage);
         // updating original message for next iteration
@@ -493,41 +500,54 @@ class Channel {
 
       final isImage = it.type == 'image';
       final cancelToken = CancelToken();
-      Future<String> future;
+      Future<SendAttachmentResponse> future;
       if (isImage) {
         future = sendImage(
           it.file!,
           onSendProgress: onSendProgress,
           cancelToken: cancelToken,
           extraData: it.extraData,
-        ).then((it) => it.file);
+        );
       } else {
         future = sendFile(
           it.file!,
           onSendProgress: onSendProgress,
           cancelToken: cancelToken,
           extraData: it.extraData,
-        ).then((it) => it.file);
+        );
       }
       _cancelableAttachmentUploadRequest[it.id] = cancelToken;
-      return future.then((url) {
+      return future.then((response) {
         client.logger.info('Attachment ${it.id} uploaded successfully...');
-        if (isImage) {
+
+        // If the response is SendFileResponse, then we might also be getting
+        // thumbUrl in case of video. So we need to update the attachment with
+        // both the assetUrl and thumbUrl.
+        if (response is SendFileResponse) {
           updateAttachment(
             it.copyWith(
-              imageUrl: url,
+              assetUrl: response.file,
+              thumbUrl: response.thumbUrl,
               uploadState: const UploadState.success(),
             ),
           );
         } else {
           updateAttachment(
             it.copyWith(
-              assetUrl: url,
+              imageUrl: response.file,
               uploadState: const UploadState.success(),
             ),
           );
         }
       }).catchError((e, stk) {
+        if (e is StreamChatNetworkError && e.isRequestCancelledError) {
+          client.logger.info('Attachment ${it.id} upload cancelled');
+
+          // remove attachment from message if cancelled.
+          updateAttachment(it, remove: true);
+          return;
+        }
+
         client.logger.severe('error uploading the attachment', e, stk);
         updateAttachment(
           it.copyWith(uploadState: UploadState.failed(error: e.toString())),
@@ -1064,9 +1084,9 @@ class Channel {
   /// See, https://getstream.io/chat/docs/other-rest/channel_update/?language=dart
   /// for more information.
   Future<UpdateChannelResponse> update(
-    Map<String, Object?> channelData, [
+    Map<String, Object?> channelData, {
     Message? updateMessage,
-  ]) async {
+  }) async {
     _checkInitialized();
     return _client.updateChannel(
       id!,
@@ -1149,12 +1169,10 @@ class Channel {
 
   /// Add members to the channel.
   Future<AddMembersResponse> addMembers(
-    List<String> memberIds, [
+    List<String> memberIds, {
     Message? message,
-    // TODO: Convert to optional parameters in v5.0.0
-    // ignore: avoid_positional_boolean_parameters
     bool hideHistory = false,
-  ]) async {
+  }) async {
     _checkInitialized();
     return _client.addChannelMembers(
       id!,
@@ -1167,18 +1185,18 @@ class Channel {
 
   /// Invite members to the channel.
   Future<InviteMembersResponse> inviteMembers(
-    List<String> memberIds, [
+    List<String> memberIds, {
     Message? message,
-  ]) async {
+  }) async {
     _checkInitialized();
     return _client.inviteChannelMembers(id!, type, memberIds, message: message);
   }
 
   /// Remove members from the channel.
   Future<RemoveMembersResponse> removeMembers(
-    List<String> memberIds, [
+    List<String> memberIds, {
     Message? message,
-  ]) async {
+  }) async {
     _checkInitialized();
     return _client.removeChannelMembers(id!, type, memberIds, message: message);
   }
@@ -1216,11 +1234,11 @@ class Channel {
   }
 
   /// Loads the initial channel state and watches for changes.
-  Future<ChannelState> watch() async {
+  Future<ChannelState> watch({bool presence = false}) async {
     ChannelState response;
 
     try {
-      response = await query(watch: true);
+      response = await query(watch: true, presence: presence);
     } catch (error, stackTrace) {
       if (!_initializedCompleter.isCompleted) {
         _initializedCompleter.completeError(error, stackTrace);
@@ -1239,7 +1257,7 @@ class Channel {
     state = ChannelClientState(this, channelState);
 
     if (cid != null) {
-      client.state.channels = {cid!: this};
+      client.state.addChannels({cid!: this});
     }
     if (!_initializedCompleter.isCompleted) {
       _initializedCompleter.complete(true);
@@ -1546,6 +1564,7 @@ class Channel {
 
   /// Call this method to dispose the channel client.
   void dispose() {
+    client.state.removeChannel('$cid');
     state?.dispose();
     _keyStrokeHandler.cancel();
   }
@@ -1608,6 +1627,10 @@ class ChannelClientState {
     _listenMemberBanned();
 
     _listenMemberUnbanned();
+
+    _listenUserStartWatching();
+
+    _listenUserStopWatching();
 
     _startCleaningStaleTypingEvents();
 
@@ -1748,6 +1771,39 @@ class ChannelClientState {
         _updateMember(member);
       },
     ));
+  }
+
+  void _listenUserStartWatching() {
+    _subscriptions.add(
+      _channel.on(EventType.userWatchingStart).listen((event) {
+        final watcher = event.user;
+        if (watcher != null) {
+          final existingWatchers = channelState.watchers;
+          updateChannelState(channelState.copyWith(
+            watchers: [
+              ...?existingWatchers,
+              watcher,
+            ],
+          ));
+        }
+      }),
+    );
+  }
+
+  void _listenUserStopWatching() {
+    _subscriptions.add(
+      _channel.on(EventType.userWatchingStop).listen((event) {
+        final watcher = event.user;
+        if (watcher != null) {
+          final existingWatchers = channelState.watchers;
+          updateChannelState(channelState.copyWith(
+            watchers: existingWatchers
+                ?.where((user) => user.id != watcher.id)
+                .toList(growable: false),
+          ));
+        }
+      }),
+    );
   }
 
   void _listenMemberUnbanned() {
@@ -2079,16 +2135,12 @@ class ChannelClientState {
         channelStateStream.map((cs) => cs.watchers),
         _channel.client.state.usersStream,
         (watchers, users) => watchers!.map((e) => users[e.id] ?? e).toList(),
-      );
+      ).distinct(const ListEquality().equals);
 
   /// Channel member for the current user.
   Member? get currentUserMember => members.firstWhereOrNull(
         (m) => m.user?.id == _channel.client.state.currentUser?.id,
       );
-
-  /// User role for the current user.
-  @Deprecated('Please use currentUserChannelRole')
-  String? get currentUserRole => currentUserMember?.role;
 
   /// Channel role for the current user
   String? get currentUserChannelRole => currentUserMember?.channelRole;
